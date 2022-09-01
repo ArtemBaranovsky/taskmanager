@@ -86,9 +86,6 @@ class TasksController extends Controller
 
         try {
             if ($userUpload) {
-                $notificationTime = Carbon::createFromTimeString($taskData['expiration_time'])
-                    ->subMinutes($taskData['notify_before']);
-                $delayMinutes = $notificationTime->diffInMinutes(Carbon::now());
                 $resource = fopen($userUpload->getRealPath(), 'r');
                 $originalFileName = $userUpload->getClientOriginalName();
                 $taskData = [
@@ -100,6 +97,10 @@ class TasksController extends Controller
 
             $task = new Task($taskData);
             $task->saveOrFail();
+
+            $notificationTime = Carbon::createFromTimeString($taskData['expiration_time'])
+                ->subMinutes($taskData['notify_before']);
+            $delayMinutes = $notificationTime->diffInMinutes(Carbon::now());
 
             User::findOrFail($userId)
                 ->notify(
@@ -197,13 +198,15 @@ class TasksController extends Controller
                 $task->status = TasksStatusEnum::DONE;
                 $task->save();
 
-                $task->notification_time = 'changed';
+                if ($task->getOriginal('notify_before')) {
+                    $task->notification_time = 'changed';
 
-                User::findOrFail($this->user_id)
-                    ->notify(
-                        (new TaskTimeExpiring($task))
-                            ->onQueue('mail-queue')
-                    );
+                    User::findOrFail($this->user->id)
+                        ->notify(
+                            (new TaskTimeExpiring($task))
+                                ->onQueue('mail-queue')
+                        );
+                };
 
                 return $this->getSuccessfulJsonResponse(['task-id' => $task->id]);
             } catch (\Throwable $exception) {

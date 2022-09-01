@@ -15,7 +15,7 @@
         "fakerphp/faker": "^1.9.1",
         "laravel/breeze": "^1.12",
         "laravel/pint": "^1.0",
-        "laravel/sail": "^1.0.1",
+        "laravel/sail": "^1.15",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
         "phpunit/phpunit": "^9.5.10",
@@ -49,6 +49,29 @@
         ],
         "run-queue": [
             "@php artisan queue:work --queue=mail-queue"
+        ],
+        "setproject": [
+            "@composer install",
+            "cp .env.example .env",
+            "@php artisan key:generate --ansi",
+            "@php artisan storage:link",
+            "mkdir storage/images/tasks",
+            "sudo chmod -R 777 storage",
+            "@php artisan migrate:fresh",
+            "@php artisan db:seed"
+        ],
+        "setproject-sail": [
+            "@composer install",
+            "cp .env.example .env",
+            "sail php artisan key:generate --ansi",
+            "sail php artisan storage:link",
+            "mkdir storage/images/tasks",
+            "sudo chmod -R 777 storage",
+            "sail php artisan migrate:fresh",
+            "sail php artisan db:seed"
+        ],
+        "docker-up": [
+            "./vendor/bin/sail up"
         ]
     },
     "extra": {

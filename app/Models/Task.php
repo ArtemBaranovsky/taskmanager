@@ -7,6 +7,7 @@ use App\Enum\TasksStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 
 class Task extends Model
@@ -96,10 +97,11 @@ class Task extends Model
      * Scope query by title like search.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param                                       $needle
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeByTitle($query, $needle)
+    public function scopeByTitle($query, $needle): Builder
     {
         return $query->where('title', 'like', "%$needle%");
     }
@@ -120,7 +122,7 @@ class Task extends Model
      *
      * @return int
      */
-    public function hasUncomletedSubTasks(Task $task)
+    public function hasUncomletedSubTasks(Task $task): int
     {
         $childTasks = $this
             ->where('user_id', '=', $task->user_id)
@@ -137,7 +139,7 @@ class Task extends Model
      *
      * @return $this|Collection
      */
-    public function getSubTasks(Collection $tasks)
+    public function getSubTasks(Collection $tasks): Collection
     {
         if ($tasks) {
             $children = new Collection();
