@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enum\TasksStatus;
 use App\Enum\TasksStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
